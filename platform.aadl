@@ -24,6 +24,11 @@ public
 
 	memory FlashDrive
 	end FlashDrive;
+	
+	memory MicroSD
+		features
+			bus_access: requires bus access HWBus;
+	end MicroSD;
 
 	bus HWBus
 	end HWBus;

@@ -7,30 +7,118 @@ public
 
 	with platform;
 	
-	-------------------------
-	--  Master Controller  --
-	-------------------------
-	process MasterController
-	end MasterController;
+	------------------
+	--  Processors  --
+	------------------
+	process MasterControlUnit
+		features
+			--Sms Service
+			text_data_in: in data port;
+			send_message_event_in: in event port;
+			
+			--Photo Storage
+			read_data_in: in data port;
+			write_data_out: in data port;
+			
+			--Input Devices 
+			detected_motion_event_in: in event port;
+			detected_smoke_event_in: in event port;
+			take_photo_event_out: out event port;
+			photo_data_in: in data port; 
+			
+			--		
+	end MasterControlUnit;
 	
-	process implementation MasterController.i
+	process implementation MasterControlUnit.i
 		subcomponents
-			thr_login: thread LoginThr.i;
-	end MasterController.i;
+			thr_login: thread LoginThr.i;	
+	end MasterControlUnit.i;
 	
-	-------------
-	--  Login  --
-	-------------
-
+	process SMSInterface
+		features
+			text_data_in: in data port;
+			send_message_event_in: in event port;
+	end SMSInterface;
+	
+	process implementation SMSInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end SMSInterface.i;
+	
+	process DataInterface
+		features
+			read_data_in: in data port;
+			read_data_out: out data port;
+			write_data_in: in data port;
+			write_data_out: in data port;
+	end DataInterface;
+	
+	process implementation DataInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end DataInterface.i;
+	
+	process MotionInterface
+		features
+			detected_motion_event_in: in event port;
+			detected_motion_event_out: out event port;
+	end MotionInterface;
+	
+	process implementation MotionInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end MotionInterface.i;
+	
+	process SmokeInterface
+		features
+			detected_smoke_event_in: in event port;
+			detected_smoke_event_out: out event port;
+	end SmokeInterface;
+	
+	process implementation SmokeInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end SmokeInterface.i;
+	
+	process CameraInterface
+		features
+			photo_data_in: in data port;
+			photo_data_out: out data port;
+			take_photo_event_in: in event port;
+	end CameraInterface;
+	
+	process implementation CameraInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end CameraInterface.i;
+	
+	process AlarmInterface
+		features
+			sound_alarm_event_in: in event port;
+			sound_alarm_data_in: in data port;
+			sound_alarm_event_out: out event port;
+			sound_alarm_data_out: out data port;
+			sound_smoke_alarm_event_in: in event port;
+			sound_smoke_alarm_data_in: in data port;
+			sound_smoke_alarm_event_out: out event port;
+			sound_smoke_alarm_data_out: out data port;
+	end AlarmInterface;
+	
+	process implementation AlarmInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;	
+	end AlarmInterface.i;
+	
+	
+	---------------
+	--  Threads  --
+	---------------
+	
 	thread LoginThr
 	end LoginThr;
 
 	thread implementation LoginThr.i
 	end LoginThr.i;
-
-	---------------
-	--  Log off  --
-	---------------
 
 	thread LogOffThr
 	end LogOffThr;
@@ -38,9 +126,6 @@ public
 	thread implementation LogOffThr.i
 	end LogOffThr.i;
 
-	-------------------
-	--  Pin Entered  --
-	-------------------
 	thread PinEnteredThr
 	end PinEnteredThr;
 
@@ -48,18 +133,11 @@ public
 		
 	end PinEnteredThr.i;
 
-	--------------------
-	--  System Armed  --
-	--------------------
 	thread SystemArmedThr
 	end SystemArmedThr;
 
 	thread implementation SystemArmedThr.i
 	end SystemArmedThr.i;
-
-	-------------------
-	--  Sound Alarm  --
-	-------------------
 
 	thread SoundAlarmThr
 	end SoundAlarmThr;
@@ -67,34 +145,22 @@ public
 	thread implementation SoundAlarmThr.i
 	end SoundAlarmThr.i;
 
-	-------------------------
-	--  Sound Smoke Alarm  --
-	-------------------------
-
 	thread SoundSmokeAlarmThr
 	end SoundSmokeAlarmThr;
 
 	thread implementation SoundSmokeAlarmThr.i
 	end SoundSmokeAlarmThr.i;
 	
-	-------------------------
-	--  Read Data  --
-	-------------------------
+	thread ProcessReadData
+	end ProcessReadData;
 
-	thread ReadData
-	end ReadData;
+	thread implementation ProcessReadData.i
+	end ProcessReadData.i;
 
-	thread implementation ReadData.i
-	end ReadData.i;
-	
-	-------------------------
-	--  Write Data  --
-	-------------------------
+	thread ProcessWriteData
+	end ProcessWriteData;
 
-	thread WriteData
-	end WriteData;
-
-	thread implementation WriteData.i
-	end WriteData.i;
+	thread implementation ProcessWriteData.i
+	end ProcessWriteData.i;
 	
 end software;

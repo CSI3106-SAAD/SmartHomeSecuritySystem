@@ -11,12 +11,19 @@ public
 	system implementation SmartHomeSecuritySystem.i
 		subcomponents
 			-- input devices
+			this_motion_sensor: device devices::MotionSensor;
+			this_smoke_sensor: device devices::SmokeSensor;
 			this_camera: device devices::Camera;
+			
 			-- output devices
-			this_alarm: device devices::AlarmSpeaker;
+			this_alarm_speaker: device devices::AlarmSpeaker;
+			this_sim_card: device devices::SimCard;
+			this_lcd_screen: device devices::LCDScreen;
+			
 
 			-- Software
-			this_master_controller: process software::MasterController;
+			this_master_control_unit: process software::MasterControlUnit.i;
+			
 
 			-- Platform
 			this_cpu: processor platform::CPU;

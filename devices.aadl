@@ -4,29 +4,49 @@
 -- 
 package devices
 public
+	with platform;
 
 	device LcdScreen
+		features
+			display_data_in: in data port;
+			
+			bus_access: requires bus access platform::HWBus;
 	end LcdScreen;
 
 	device KeyPad
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end KeyPad;
 
 	device SimCard
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end SimCard;
 
-	device MicroSD
-	end MicroSD;
-
 	device MotionSensor
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end MotionSensor;
 
 	device SmokeSensor
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end SmokeSensor;
 
 	device Camera
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end Camera;
 
 	device AlarmSpeaker
+		features
+			
+			bus_access: requires bus access platform::HWBus;
 	end AlarmSpeaker;
 
 end devices;
