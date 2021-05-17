@@ -2,8 +2,31 @@
 -- This model is part of the case study for the SHSS model
 -- using AADL. These represent the hardware in the system.
 -- 
-
 package devices
 public
+
+	device lcd_screen
+	end lcd_screen;
+
+	device key_pad
+	end key_pad;
+
+	device sim_card
+	end sim_card;
+
+	device micro_sd
+	end micro_sd;
+
+	device motion_sensor
+	end motion_sensor;
+
+	device smoke_sensor
+	end smoke_sensor;
+
+	device camera
+	end camera;
+
+	device alarm_speaker
+	end alarm_speaker;
 
 end devices;
