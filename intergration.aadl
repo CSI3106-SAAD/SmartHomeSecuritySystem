@@ -14,6 +14,8 @@ public
 			this_motion_sensor: device devices::MotionSensor;
 			this_smoke_sensor: device devices::SmokeSensor;
 			this_camera: device devices::Camera;
+			this_keypad: device devices::KeyPad;
+			
 			
 			-- output devices
 			this_alarm_speaker: device devices::AlarmSpeaker;

@@ -8,14 +8,13 @@ public
 
 	device LcdScreen
 		features
-			display_data_in: in data port;
-			
+			display_data_in: in data port;			
 			bus_access: requires bus access platform::HWBus;
 	end LcdScreen;
 
 	device KeyPad
 		features
-			
+			pin_data_out: out data port; 
 			bus_access: requires bus access platform::HWBus;
 	end KeyPad;
 

@@ -12,21 +12,19 @@ public
 	------------------
 	process MasterControlUnit
 		features
-			--Sms Service
-			text_data_in: in data port;
-			send_message_event_in: in event port;
-			
-			--Photo Storage
-			read_data_in: in data port;
-			write_data_out: in data port;
-			
 			--Input Devices 
 			detected_motion_event_in: in event port;
 			detected_smoke_event_in: in event port;
+			photo_data_in: in data port;
+			pin_data_in: in data port; 
+			read_data_in: in data port;
+						
+			-- Output Devices
+			display_data_out: out data port;
 			take_photo_event_out: out event port;
-			photo_data_in: in data port; 
-			
-			--		
+			write_data_out: out data port;
+			send_message_event_out: in event port;
+			text_data_out: in data port;					
 	end MasterControlUnit;
 	
 	process implementation MasterControlUnit.i
