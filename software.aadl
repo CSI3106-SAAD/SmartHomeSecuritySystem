@@ -45,8 +45,7 @@ public
 	end PinEnteredThr;
 
 	thread implementation PinEnteredThr.i
-		properties
-			reference_processor => classifier (platform::CPU);
+		
 	end PinEnteredThr.i;
 
 	--------------------
@@ -77,5 +76,25 @@ public
 
 	thread implementation SoundSmokeAlarmThr.i
 	end SoundSmokeAlarmThr.i;
+	
+	-------------------------
+	--  Read Data  --
+	-------------------------
 
+	thread ReadData
+	end ReadData;
+
+	thread implementation ReadData.i
+	end ReadData.i;
+	
+	-------------------------
+	--  Write Data  --
+	-------------------------
+
+	thread WriteData
+	end WriteData;
+
+	thread implementation WriteData.i
+	end WriteData.i;
+	
 end software;

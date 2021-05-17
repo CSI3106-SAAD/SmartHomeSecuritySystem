@@ -1,0 +1,27 @@
+package intergration
+public
+
+	with devices;
+	with software;
+	with platform;
+
+	system SmartHomeSecuritySystem
+	end SmartHomeSecuritySystem;
+
+	system implementation SmartHomeSecuritySystem.i
+		subcomponents
+			-- input devices
+			this_camera: device devices::Camera;
+			-- output devices
+			this_alarm: device devices::AlarmSpeaker;
+
+			-- Software
+			this_master_controller: process software::MasterController;
+
+			-- Platform
+			this_cpu: processor platform::CPU;
+			this_bus: bus platform::HWBus;
+
+	end SmartHomeSecuritySystem.i;
+
+end intergration;

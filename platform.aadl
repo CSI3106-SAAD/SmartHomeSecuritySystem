@@ -6,12 +6,29 @@ package platform
 public
 
 	processor CPU
+		features
+			bus_access: requires bus access HWBus;
 	end CPU;
+
+	processor implementation CPU.i
+		subcomponents
+			this_ram: memory RAM;
+			this_flash_drive: memory FlashDrive;
+		properties
+			Preemptive_Scheduler => true;
+			Scheduler_Quantum => 2 ms;
+	end CPU.i;
 
 	memory RAM
 	end RAM;
 
+	memory FlashDrive
+	end FlashDrive;
+
 	bus HWBus
-	end HwBus;
+	end HWBus;
+
+	bus implementation HWBus.i
+	end HWBus.i;
 
 end platform;
