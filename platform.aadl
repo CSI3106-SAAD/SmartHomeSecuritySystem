@@ -1,0 +1,9 @@
+-- 
+-- This model is part of the case study for the SHSS model
+-- using AADL. These represent the processor components in the system.
+-- 
+
+package platform
+public
+	
+end platform;

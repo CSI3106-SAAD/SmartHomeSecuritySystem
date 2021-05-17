@@ -1,0 +1,9 @@
+-- 
+-- This model is part of the case study for the SHSS model
+-- using AADL. These represent the hardware in the system.
+-- 
+
+package devices
+public
+
+end devices;
