@@ -5,28 +5,28 @@
 package devices
 public
 
-	device lcd_screen
-	end lcd_screen;
+	device LcdScreen
+	end LcdScreen;
 
-	device key_pad
-	end key_pad;
+	device KeyPad
+	end KeyPad;
 
-	device sim_card
-	end sim_card;
+	device SimCard
+	end SimCard;
 
-	device micro_sd
-	end micro_sd;
+	device MicroSD
+	end MicroSD;
 
-	device motion_sensor
-	end motion_sensor;
+	device MotionSensor
+	end MotionSensor;
 
-	device smoke_sensor
-	end smoke_sensor;
+	device SmokeSensor
+	end SmokeSensor;
 
-	device camera
-	end camera;
+	device Camera
+	end Camera;
 
-	device alarm_speaker
-	end alarm_speaker;
+	device AlarmSpeaker
+	end AlarmSpeaker;
 
 end devices;
