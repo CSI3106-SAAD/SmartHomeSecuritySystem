@@ -11,7 +11,7 @@ public
 	memory RAM
 	end RAM;
 
-	bus Bus
-	end Bus;
+	bus HWBus
+	end HwBus;
 
 end platform;

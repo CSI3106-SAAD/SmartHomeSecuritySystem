@@ -2,8 +2,80 @@
 -- This model is part of the case study for the SHSS model
 -- using AADL. These represent the software in the system.
 -- 
-
 package software
 public
+
+	with platform;
 	
+	-------------------------
+	--  Master Controller  --
+	-------------------------
+	process MasterController
+	end MasterController;
+	
+	process implementation MasterController.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end MasterController.i;
+	
+	-------------
+	--  Login  --
+	-------------
+
+	thread LoginThr
+	end LoginThr;
+
+	thread implementation LoginThr.i
+	end LoginThr.i;
+
+	---------------
+	--  Log off  --
+	---------------
+
+	thread LogOffThr
+	end LogOffThr;
+
+	thread implementation LogOffThr.i
+	end LogOffThr.i;
+
+	-------------------
+	--  Pin Entered  --
+	-------------------
+	thread PinEnteredThr
+	end PinEnteredThr;
+
+	thread implementation PinEnteredThr.i
+		properties
+			reference_processor => classifier (platform::CPU);
+	end PinEnteredThr.i;
+
+	--------------------
+	--  System Armed  --
+	--------------------
+	thread SystemArmedThr
+	end SystemArmedThr;
+
+	thread implementation SystemArmedThr.i
+	end SystemArmedThr.i;
+
+	-------------------
+	--  Sound Alarm  --
+	-------------------
+
+	thread SoundAlarmThr
+	end SoundAlarmThr;
+
+	thread implementation SoundAlarmThr.i
+	end SoundAlarmThr.i;
+
+	-------------------------
+	--  Sound Smoke Alarm  --
+	-------------------------
+
+	thread SoundSmokeAlarmThr
+	end SoundSmokeAlarmThr;
+
+	thread implementation SoundSmokeAlarmThr.i
+	end SoundSmokeAlarmThr.i;
+
 end software;
