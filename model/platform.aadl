@@ -27,6 +27,9 @@ public
 	
 	memory MicroSD
 		features
+			read_data_in: in data port;
+			read_data_out: out data port;
+			write_data_in: in data port;
 			bus_access: requires bus access HWBus;
 	end MicroSD;
 

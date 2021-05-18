@@ -1,0 +1,87 @@
+package intergration
+public
+
+	with devices;
+	with software;
+	with platform;
+
+	system SmartHomeSecuritySystem
+	end SmartHomeSecuritySystem;
+
+	system implementation SmartHomeSecuritySystem.i
+		subcomponents
+			-- input devices
+			this_motion_sensor: device devices::MotionSensor;
+			this_smoke_sensor: device devices::SmokeSensor;
+			this_camera: device devices::Camera;
+			this_keypad: device devices::KeyPad;
+			
+			
+			-- output devices
+			this_alarm_speaker: device devices::AlarmSpeaker;
+			this_sim_card: device devices::SimCard;
+			this_lcd_screen: device devices::LCDScreen;
+			
+
+			-- Software
+			this_master_control_unit: process software::MasterControlUnit.i;
+			
+			-- input processes
+			this_motion_interface: process software::MotionInterface.i;
+			this_smoke_interface: process software::SmokeInterface.i;
+			this_camera_interface: process software::CameraInterface.i;
+			
+			-- output processes
+			this_sms_interface: process software::SmsInterface.i;
+			this_data_interface: process software::DataInterface.i;
+			this_alarm_interface: process software::AlarmInterface.i;
+
+			-- Platform
+			this_cpu: processor platform::CPU;
+			this_microsd: memory platform::MicroSD;
+			this_bus: bus platform::HWBus;
+			
+		connections
+			--MC input connections			
+			c100: port this_keypad.pin_data_out-> this_data_interface.write_data_in;
+			c080: port this_motion_interface.detected_motion_event_out-> this_master_control_unit.detected_motion_event_in;
+			c110: port this_smoke_interface.detected_smoke_event_out-> this_master_control_unit.detected_smoke_event_in;
+			c130: port this_camera_interface.photo_data_out-> this_master_control_unit.photo_data_in;
+			c180: port this_data_interface.read_data_out-> this_master_control_unit.read_data_in;
+			
+			--MC output connections
+			c060: port this_master_control_unit.display_data_out-> this_lcd_screen.display_data_in;
+			c090: port this_master_control_unit.write_data_out-> this_data_interface.write_data_in;
+			c140: port this_master_control_unit.send_message_event_out-> this_sms_interface.send_message_event_in;
+			c150: port this_master_control_unit.sound_alarm_event_out-> this_alarm_interface.sound_alarm_event_in;
+			c160: port this_master_control_unit.sound_smoke_alarm_event_out-> this_alarm_interface.sound_smoke_alarm_event_in;
+						
+			--input connections
+			c000: port  this_motion_sensor.detected_motion_event_out-> this_motion_interface.detected_motion_event_in;
+			c010: port  this_smoke_sensor.detected_smoke_event_out-> this_smoke_interface.detected_smoke_event_in;
+			c020: port  this_camera.photo_data_out-> this_camera_interface.photo_data_in;
+			c030: port  this_microsd.read_data_out-> this_data_interface.read_data_in;
+			
+			--output connections
+			c040: port this_alarm_interface.sound_alarm_event_out-> this_alarm_speaker.sound_alarm_event_in;
+			c190: port this_alarm_interface.sound_smoke_alarm_event_out-> this_alarm_speaker.sound_smoke_alarm_event_in;
+			c050: port this_sms_interface.send_message_event_out-> this_sim_card.send_message_event_in;
+			c070: port this_data_interface.write_data_out-> this_microsd.write_data_in;
+			
+			--Platform Bus Connections
+			bus_processor: bus access this_bus -> this_cpu.bus_access;
+			bus_microsd: bus access this_bus -> this_microsd.bus_access;
+			
+			--Device Bus Connections
+			bus_motion_sensor: bus access this_bus -> this_motion_sensor.bus_access;
+			bus_smoke_sensor: bus access this_bus -> this_smoke_sensor.bus_access;
+			bus_camera: bus access this_bus -> this_camera.bus_access;
+			bus_keypad: bus access this_bus -> this_keypad.bus_access;
+			bus_alarm_speaker: bus access this_bus -> this_alarm_speaker.bus_access;
+			bus_simcard: bus access this_bus -> this_sim_card.bus_access;
+			bus_lcd_screen: bus access this_bus -> this_lcd_screen.bus_access;
+			
+
+	end SmartHomeSecuritySystem.i;
+
+end intergration;

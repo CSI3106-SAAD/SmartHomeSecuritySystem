@@ -5,79 +5,45 @@
 package software
 public
 
-	with platform;
+	---------------------------
+	--  Process Definitions  --
+	---------------------------
 	
-	------------------
-	--  Processors  --
-	------------------
 	process MasterControlUnit
 		features
-			--Input Devices 
+		--Input Devices 
+			photo_data_in: in data port;
+			pin_data_in: in data port;
+			read_data_in: in data port;
 			detected_motion_event_in: in event port;
 			detected_smoke_event_in: in event port;
-			photo_data_in: in data port;
-			pin_data_in: in data port; 
-			read_data_in: in data port;
-						
+
 			-- Output Devices
 			display_data_out: out data port;
-			take_photo_event_out: out event port;
 			write_data_out: out data port;
-			send_message_event_out: in event port;
-			text_data_out: in data port;					
+			take_photo_event_out: out event port;
+			send_message_event_out: out event port;
+			sound_alarm_event_out: out event port;
+			sound_smoke_alarm_event_out: out event port;
+			
 	end MasterControlUnit;
 	
-	process implementation MasterControlUnit.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end MasterControlUnit.i;
-	
-	process SMSInterface
-		features
-			text_data_in: in data port;
-			send_message_event_in: in event port;
-	end SMSInterface;
-	
-	process implementation SMSInterface.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end SMSInterface.i;
-	
-	process DataInterface
-		features
-			read_data_in: in data port;
-			read_data_out: out data port;
-			write_data_in: in data port;
-			write_data_out: in data port;
-	end DataInterface;
-	
-	process implementation DataInterface.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end DataInterface.i;
+	-----------------------------
+	--  Input Definitions  --
+	-----------------------------
 	
 	process MotionInterface
 		features
 			detected_motion_event_in: in event port;
 			detected_motion_event_out: out event port;
 	end MotionInterface;
-	
-	process implementation MotionInterface.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end MotionInterface.i;
-	
+
 	process SmokeInterface
 		features
 			detected_smoke_event_in: in event port;
 			detected_smoke_event_out: out event port;
 	end SmokeInterface;
-	
-	process implementation SmokeInterface.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end SmokeInterface.i;
-	
+
 	process CameraInterface
 		features
 			photo_data_in: in data port;
@@ -85,33 +51,84 @@ public
 			take_photo_event_in: in event port;
 	end CameraInterface;
 	
-	process implementation CameraInterface.i
-		subcomponents
-			thr_login: thread LoginThr.i;	
-	end CameraInterface.i;
-	
+	-------------------------------
+	--  Outputs Definitions  --
+	-------------------------------
+
+	process SMSInterface
+		features
+			send_message_event_in: in event port;
+			send_message_event_out: out event port;
+	end SMSInterface;
+
+	process DataInterface
+		features
+			read_data_in: in data port;
+			read_data_out: out data port;
+			write_data_in: in data port;
+			write_data_out: out data port;
+	end DataInterface;
+
 	process AlarmInterface
 		features
 			sound_alarm_event_in: in event port;
-			sound_alarm_data_in: in data port;
 			sound_alarm_event_out: out event port;
-			sound_alarm_data_out: out data port;
 			sound_smoke_alarm_event_in: in event port;
-			sound_smoke_alarm_data_in: in data port;
 			sound_smoke_alarm_event_out: out event port;
-			sound_smoke_alarm_data_out: out data port;
 	end AlarmInterface;
+
+	-------------------------------
+	--  Process Implementations  --
+	-------------------------------
 	
+	process implementation MasterControlUnit.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end MasterControlUnit.i;
+
+	-----------------------------
+	--  Input Implementations  --
+	-----------------------------
+
+	process implementation MotionInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end MotionInterface.i;
+
+	process implementation SmokeInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end SmokeInterface.i;
+
+	process implementation CameraInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end CameraInterface.i;
+
+
+	-------------------------------
+	--  Outputs Implementations  --
+	-------------------------------
+
+	process implementation SMSInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+	end SMSInterface.i;
+
+	process implementation DataInterface.i
+		subcomponents
+			thr_login: thread LoginThr.i;
+
+	end DataInterface.i;
+
 	process implementation AlarmInterface.i
 		subcomponents
-			thr_login: thread LoginThr.i;	
+			thr_login: thread LoginThr.i;
 	end AlarmInterface.i;
-	
-	
+
 	---------------
 	--  Threads  --
 	---------------
-	
 	thread LoginThr
 	end LoginThr;
 
@@ -128,7 +145,7 @@ public
 	end PinEnteredThr;
 
 	thread implementation PinEnteredThr.i
-		
+
 	end PinEnteredThr.i;
 
 	thread SystemArmedThr
@@ -148,7 +165,7 @@ public
 
 	thread implementation SoundSmokeAlarmThr.i
 	end SoundSmokeAlarmThr.i;
-	
+
 	thread ProcessReadData
 	end ProcessReadData;
 
@@ -160,5 +177,5 @@ public
 
 	thread implementation ProcessWriteData.i
 	end ProcessWriteData.i;
-	
+
 end software;

@@ -20,31 +20,33 @@ public
 
 	device SimCard
 		features
-			
+			send_message_event_in: in event port;
 			bus_access: requires bus access platform::HWBus;
 	end SimCard;
 
 	device MotionSensor
 		features
-			
+			detected_motion_event_out: out event port;
 			bus_access: requires bus access platform::HWBus;
 	end MotionSensor;
 
 	device SmokeSensor
 		features
-			
+			detected_smoke_event_out: out event port;
 			bus_access: requires bus access platform::HWBus;
 	end SmokeSensor;
 
 	device Camera
 		features
-			
+			photo_data_out: out data port;
+			take_photo_event_in: in event port;
 			bus_access: requires bus access platform::HWBus;
 	end Camera;
 
 	device AlarmSpeaker
 		features
-			
+			sound_alarm_event_in: in event port;
+			sound_smoke_alarm_event_in: in event port;
 			bus_access: requires bus access platform::HWBus;
 	end AlarmSpeaker;
 
