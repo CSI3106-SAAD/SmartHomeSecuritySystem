@@ -25,6 +25,7 @@ public
 			send_message_event_out: out event port;
 			sound_alarm_event_out: out event port;
 			sound_smoke_alarm_event_out: out event port;
+			read_data_event: out event port;
 			
 	end MasterControlUnit;
 	
@@ -49,6 +50,7 @@ public
 			photo_data_in: in data port;
 			photo_data_out: out data port;
 			take_photo_event_in: in event port;
+			take_photo_event_out: out event port;
 	end CameraInterface;
 	
 	-------------------------------
@@ -63,6 +65,8 @@ public
 
 	process DataInterface
 		features
+			read_data_event_in: in event port;
+			read_data_event_out: out event port;
 			read_data_in: in data port;
 			read_data_out: out data port;
 			write_data_in: in data port;
@@ -126,9 +130,10 @@ public
 			thr_login: thread LoginThr.i;
 	end AlarmInterface.i;
 
-	---------------
-	--  Threads  --
-	---------------
+	----------------------------
+	--  Threads  Definitions  --
+	----------------------------
+	
 	thread LoginThr
 	end LoginThr;
 
