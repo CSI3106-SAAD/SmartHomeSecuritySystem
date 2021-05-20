@@ -1,0 +1,13 @@
+Bind threads to processors Report
+
+Binpacker Analysis Report
+
+
+Binpacking results: Success
+Processor SmartHomeSecuritySystem_i_Instance.this_cpu (1000.0 MIPS) Load: 30% Available: 70%
+
+Thread to Processor Bindings
+Thread SmartHomeSecuritySystem_i_Instance.mcu.thr_sound_alarm ==> Processor SmartHomeSecuritySystem_i_Instance.this_cpu No CPU capacity
+Thread SmartHomeSecuritySystem_i_Instance.mcu.thr_login ==> Processor SmartHomeSecuritySystem_i_Instance.this_cpu No CPU capacity
+Thread SmartHomeSecuritySystem_i_Instance.mcu.thr_save_photo ==> Processor SmartHomeSecuritySystem_i_Instance.this_cpu No CPU capacity
+Thread SmartHomeSecuritySystem_i_Instance.mcu.thr_system_armed ==> Processor SmartHomeSecuritySystem_i_Instance.this_cpu No CPU capacity

@@ -6,48 +6,115 @@ package devices
 public
 	with platform;
 
+	
 	device LcdScreen
 		features
-			display_data_in: in data port;			
-			bus_access: requires bus access platform::HWBus;
+			display_data_in: in data port;
+			success: out event port;			
+			bus_access: requires bus access platform::HWBus.i;
+		
+	flows
+			f0: flow sink display_data_in;
+			f1: flow path display_data_in ->  success;
+		properties
+			Period => 100 ms;
 	end LcdScreen;
 
 	device KeyPad
 		features
-			pin_data_out: out data port; 
-			bus_access: requires bus access platform::HWBus;
+			pin_data_out: out data port;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f0: flow source pin_data_out;
+		properties
+			Period => 10 ms;
 	end KeyPad;
 
 	device SimCard
 		features
 			send_message_event_in: in event port;
-			bus_access: requires bus access platform::HWBus;
+			success: out event port;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f0: flow sink send_message_event_in;
+		properties
+			Period => 8 ms;
 	end SimCard;
 
 	device MotionSensor
 		features
 			detected_motion_event_out: out event port;
-			bus_access: requires bus access platform::HWBus;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f0: flow source detected_motion_event_out;
+		properties
+			Period => 20 ms;
 	end MotionSensor;
 
 	device SmokeSensor
 		features
 			detected_smoke_event_out: out event port;
-			bus_access: requires bus access platform::HWBus;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f0: flow source detected_smoke_event_out;
+
+		properties
+			Period => 20 ms;
 	end SmokeSensor;
 
 	device Camera
 		features
 			photo_data_out: out data port;
 			take_photo_event_in: in event port;
-			bus_access: requires bus access platform::HWBus;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f0: flow path take_photo_event_in -> photo_data_out;
+		properties
+			Period => 100 ms;
 	end Camera;
 
 	device AlarmSpeaker
 		features
-			sound_alarm_event_in: in event port;
-			sound_smoke_alarm_event_in: in event port;
-			bus_access: requires bus access platform::HWBus;
+			sound_alarm_on_off: in event port;
+			success: out event port;
+			bus_access: requires bus access platform::HWBus.i;
+		flows
+			f1: flow path sound_alarm_on_off -> success;			
+		properties
+			Period => 150 ms;
 	end AlarmSpeaker;
+
+	device MicroSD
+		features
+			read_write_data_in: in data port;
+			read_write_data_out: out data port;
+			success: out event port;
+			bus_access: requires bus access platform::HWBus;
+		flows
+			f0: flow sink read_write_data_in;
+			f1: flow path read_write_data_in -> read_write_data_out;
+			f2: flow path read_write_data_in -> success;
+	end MicroSD;
+
+	device implementation MicroSD.DataInterface
+	end MicroSD.DataInterface;
+
+	------------------
+	--  Interfaces  --
+	------------------
+	device implementation SimCard.SMSInterface
+	end SimCard.SMSInterface;
+
+	device implementation MotionSensor.MotionInterface
+	end MotionSensor.MotionInterface;
+
+	device implementation SmokeSensor.SmokeInterface
+	end SmokeSensor.SmokeInterface;
+
+	device implementation Camera.CameraInterface
+	end Camera.CameraInterface;
+
+	device implementation AlarmSpeaker.AlarmInterface
+	end AlarmSpeaker.AlarmInterface;
 
 end devices;

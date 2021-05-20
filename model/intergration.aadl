@@ -11,86 +11,75 @@ public
 	system implementation SmartHomeSecuritySystem.i
 		subcomponents
 		-- input devices
-			this_motion_sensor: device devices::MotionSensor;
-			this_smoke_sensor: device devices::SmokeSensor;
-			this_camera: device devices::Camera;
-			this_keypad: device devices::KeyPad;
+			motion_interface: device devices::MotionSensor.MotionInterface;
+			smoke_interface: device devices::SmokeSensor.SmokeInterface;
+			camera_interface: device devices::Camera.CameraInterface;
+			keypad: device devices::KeyPad;
 
 			-- output devices
-			this_alarm_speaker: device devices::AlarmSpeaker;
-			this_sim_card: device devices::SimCard;
-			this_lcd_screen: device devices::LCDScreen;
+			alarm_interface: device devices::AlarmSpeaker.AlarmInterface;
+			sms_interface: device devices::SimCard.SmsInterface;
+			lcd_screen: device devices::LCDScreen;
 
 			-- Software
-			this_master_control_unit: process software::MasterControlUnit.i;
-
-			-- input processes
-			this_motion_interface: process software::MotionInterface.i;
-			this_smoke_interface: process software::SmokeInterface.i;
-			this_camera_interface: process software::CameraInterface.i;
-
-			-- output processes
-			this_sms_interface: process software::SmsInterface.i;
-			this_data_interface: process software::DataInterface.i;
-			this_alarm_interface: process software::AlarmInterface.i;
+			mcu: process software::MasterControlUnit.i;
 
 			-- Platform
-			this_cpu: processor platform::CPU;
-			this_microsd: memory platform::MicroSD;
-			this_bus: bus platform::HWBus;
+			this_cpu: processor platform::CPU.i;
+			data_interface: device devices::MicroSD.DataInterface;
+			this_bus: bus platform::HWBus.i;
 
 		connections
 		--MC input connections			
-			c000: port this_keypad.pin_data_out -> this_master_control_unit.pin_data_in;
-			c010: port this_motion_interface.detected_motion_event_out -> this_master_control_unit.detected_motion_event_in;
-			c020: port this_smoke_interface.detected_smoke_event_out -> this_master_control_unit.detected_smoke_event_in;
-			c030: port this_camera_interface.photo_data_out -> this_master_control_unit.photo_data_in;
-			c040: port this_data_interface.read_data_out -> this_master_control_unit.read_data_in;
+			c000: port keypad.pin_data_out -> mcu.pin_data_in;
+			c110: port motion_interface.detected_motion_event_out -> mcu.detected_motion_event_in;
+			c120: port smoke_interface.detected_smoke_event_out -> mcu.detected_smoke_event_in;
+			c130: port camera_interface.photo_data_out -> mcu.photo_data_in;
 
 			--MC output connections
-			c050: port this_master_control_unit.display_data_out -> this_lcd_screen.display_data_in;
-			c060: port this_master_control_unit.write_data_out -> this_data_interface.write_data_in;
-			c070: port this_master_control_unit.send_message_event_out -> this_sms_interface.send_message_event_in;
-			c080: port this_master_control_unit.take_photo_event_out -> this_camera_interface.take_photo_event_in;
-			c090: port this_master_control_unit.sound_alarm_event_out -> this_alarm_interface.sound_alarm_event_in;
-			c100: port this_master_control_unit.sound_smoke_alarm_event_out -> this_alarm_interface.sound_smoke_alarm_event_in;
-			c200: port this_master_control_unit.read_data_event -> this_data_interface.read_data_event_in;
+			c150: port mcu.sound_alarm_event_out -> alarm_interface.sound_alarm_on_off;
+			c170: port mcu.send_message_event_out -> sms_interface.send_message_event_in;
+			c180: port mcu.write_read_data_out -> data_interface.read_write_data_in;
+			c190: port mcu.take_photo_event_out -> camera_interface.take_photo_event_in;
+			c210: port data_interface.read_write_data_out -> mcu.read_write_data_in;
+			c050: port mcu.display_data_out -> lcd_screen.display_data_in;
 
-			--input connections
-			c110: port this_motion_sensor.detected_motion_event_out -> this_motion_interface.detected_motion_event_in;
-			c120: port this_smoke_sensor.detected_smoke_event_out -> this_smoke_interface.detected_smoke_event_in;
-			c130: port this_camera.photo_data_out -> this_camera_interface.photo_data_in;
-			c140: port this_microsd.read_data_out -> this_data_interface.read_data_in;
-
-			--output connections
-			c150: port this_alarm_interface.sound_alarm_event_out -> this_alarm_speaker.sound_alarm_event_in;
-			c160: port this_alarm_interface.sound_smoke_alarm_event_out -> this_alarm_speaker.sound_smoke_alarm_event_in;
-			c170: port this_sms_interface.send_message_event_out -> this_sim_card.send_message_event_in;
-			c180: port this_data_interface.write_data_out -> this_microsd.write_data_in;
-			c190: port this_camera_interface.take_photo_event_out -> this_camera.take_photo_event_in;
-			c210: port this_data_interface.read_data_event_out -> this_microsd.read_data_event_in;
+			--mc alarm success trigger connections
+			c010: port lcd_screen.success -> mcu.success_in;
+			c020: port alarm_interface.success -> mcu.success_in;
+			c030: port sms_interface.success -> mcu.success_in;
+			c040: port data_interface.success -> mcu.success_in;
 
 			--Platform Bus Connections
 			bus_processor: bus access this_bus -> this_cpu.bus_access;
-			bus_microsd: bus access this_bus -> this_microsd.bus_access;
+			bus_microsd: bus access this_bus -> data_interface.bus_access;
 
 			--Device Bus Connections
-			bus_motion_sensor: bus access this_bus -> this_motion_sensor.bus_access;
-			bus_smoke_sensor: bus access this_bus -> this_smoke_sensor.bus_access;
-			bus_camera: bus access this_bus -> this_camera.bus_access;
-			bus_keypad: bus access this_bus -> this_keypad.bus_access;
-			bus_alarm_speaker: bus access this_bus -> this_alarm_speaker.bus_access;
-			bus_simcard: bus access this_bus -> this_sim_card.bus_access;
-			bus_lcd_screen: bus access this_bus -> this_lcd_screen.bus_access;
-
+			bus_motion_sensor: bus access this_bus -> motion_interface.bus_access;
+			bus_smoke_sensor: bus access this_bus -> smoke_interface.bus_access;
+			bus_camera: bus access this_bus -> camera_interface.bus_access;
+			bus_keypad: bus access this_bus -> keypad.bus_access;
+			bus_alarm_speaker: bus access this_bus -> alarm_interface.bus_access;
+			bus_simcard: bus access this_bus -> sms_interface.bus_access;
+			bus_lcd_screen: bus access this_bus -> lcd_screen.bus_access;
+		flows
+		-- alarm configuration
+			f0: end to end flow keypad.f0 -> c000 -> mcu.f0 -> c180 -> data_interface.f0{Latency => 0ms .. 200 ms;};
+			--arm system on or off with out alarm going crazy
+			f1: end to end flow keypad.f0 -> c000 -> mcu.f0 -> c180 -> data_interface.f1 -> c210 -> mcu.f1 -> c050 ->
+							lcd_screen.f0{Latency => 100ms .. 400 ms;};
+							--failed on the pin throw alarm
+			f2: end to end flow keypad.f0 -> c000 -> mcu.f0 -> c180 -> data_interface.f1 -> c210 -> mcu.f2 -> c050 ->
+							lcd_screen.f1 -> c010 -> mcu.f3 -> c190 -> camera_interface.f0 -> c130 -> mcu.f6 -> c180 -> data_interface.f2
+							-> c040 -> mcu.f4 -> c150 -> alarm_interface.f1 -> c020 -> mcu.f5 -> c170 -> sms_interface.f0{Latency => 500ms .. 2000 ms;};
 		properties
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_login;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_log_off;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_pin_entered;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_system_armed;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_sound_alarm;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_sound_smoke_alarm;
-			Allowed_Processor_Binding => (reference (this_cpu)) applies to this_master_control_unit.thr_save_photo;
+		--MC thread processor bindings
+			Actual_Connection_Binding => (reference (this_bus)) applies to c000, c110, c120, c130, c150, c170, c180, c190, c210,
+							c050, c010, c020, c030, c040;
+			Allowed_Processor_Binding => (reference (this_cpu)) applies to mcu.thr_login;
+			Allowed_Processor_Binding => (reference (this_cpu)) applies to mcu.thr_system_armed;
+			Allowed_Processor_Binding => (reference (this_cpu)) applies to mcu.thr_sound_alarm;
+			Allowed_Processor_Binding => (reference (this_cpu)) applies to mcu.thr_save_photo;
 	end SmartHomeSecuritySystem.i;
 
 end intergration;

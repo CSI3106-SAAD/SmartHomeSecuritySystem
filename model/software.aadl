@@ -13,211 +13,110 @@ public
 		--Input Devices 
 			photo_data_in: in data port;
 			pin_data_in: in data port;
-			read_data_in: in data port;
+			read_write_data_in: in data port;
 			detected_motion_event_in: in event port;
 			detected_smoke_event_in: in event port;
+			success_in: in event port;
 
 			-- Output Devices
 			display_data_out: out data port;
-			write_data_out: out data port;
+			write_read_data_out: out data port;
 			take_photo_event_out: out event port;
 			send_message_event_out: out event port;
 			sound_alarm_event_out: out event port;
-			sound_smoke_alarm_event_out: out event port;
-			read_data_event: out event port;
+			flows 
+				f0: flow path pin_data_in -> write_read_data_out;
+				f1: flow path read_write_data_in -> display_data_out;
+				f2: flow path read_write_data_in -> display_data_out;
+				f3: flow path success_in -> take_photo_event_out;
+				f4: flow path success_in -> sound_alarm_event_out;
+				f5: flow path success_in -> send_message_event_out;
+				f6: flow path photo_data_in -> write_read_data_out;
 
 	end MasterControlUnit;
-
-	-----------------------------
-	--  Input Definitions  --
-	-----------------------------
-	process MotionInterface
-		features
-			detected_motion_event_in: in event port;
-			detected_motion_event_out: out event port;
-	end MotionInterface;
-
-	process SmokeInterface
-		features
-			detected_smoke_event_in: in event port;
-			detected_smoke_event_out: out event port;
-	end SmokeInterface;
-
-	process CameraInterface
-		features
-			photo_data_in: in data port;
-			photo_data_out: out data port;
-			take_photo_event_in: in event port;
-			take_photo_event_out: out event port;
-	end CameraInterface;
-
-	-------------------------------
-	--  Outputs Definitions  --
-	-------------------------------
-	process SMSInterface
-		features
-			send_message_event_in: in event port;
-			send_message_event_out: out event port;
-	end SMSInterface;
-
-	process DataInterface
-		features
-			read_data_event_in: in event port;
-			read_data_event_out: out event port;
-			read_data_in: in data port;
-			read_data_out: out data port;
-			write_data_in: in data port;
-			write_data_out: out data port;
-	end DataInterface;
-
-	process AlarmInterface
-		features
-			sound_alarm_event_in: in event port;
-			sound_alarm_event_out: out event port;
-			sound_smoke_alarm_event_in: in event port;
-			sound_smoke_alarm_event_out: out event port;
-	end AlarmInterface;
 
 	-------------------------------
 	--  Process Implementations  --
 	-------------------------------
 	process implementation MasterControlUnit.i
 		subcomponents
-			thr_login: thread LoginThr.i;
-			thr_log_off: thread LogOffThr.i;
-			thr_pin_entered: thread PinEnteredThr.i;
+			thr_login: thread PinEnteredThr.i;
 			thr_system_armed: thread SystemArmedThr.i;
 			thr_sound_alarm: thread SoundAlarmThr.i;
-			thr_sound_smoke_alarm: thread SoundSmokeAlarmThr.i;
 			thr_save_photo: thread SavePhotoThr.i;
 
 		connections
 		--PinEnteredThr connections
-			t001: port pin_data_in -> thr_pin_entered.pin_input_data_in;
-			t002: port thr_pin_entered.read_pin_event_out -> read_data_event;
-			t003: port read_data_in -> thr_pin_entered.read_pin_data_in;
-			t004: port thr_pin_entered.auth_results_data_out -> thr_system_armed.auth_results_data_in;
-			t005: port thr_pin_entered.take_photo_event_out -> take_photo_event_out;
+			t001: port pin_data_in -> thr_login.pin_input_data_in;
+			t003: port read_write_data_in -> thr_login.data_in;
+			t004: port thr_login.auth_results_data_out -> thr_system_armed.auth_results_data_in;
+			t018: port thr_login.read_out -> write_read_data_out;
 
 			--SystemArmedThr connections
-			t006: port thr_system_armed.display_alarm_status -> display_data_out;
-			t007: port thr_system_armed.sendMessage_event_out -> send_message_event_out;
-			t008: port detected_motion_event_in -> thr_system_armed.alarm_triggered_event_in;
+			t006: port thr_system_armed.display_alarm_on_off -> display_data_out;
+			t007: port thr_sound_alarm.sendMessage_event_out -> send_message_event_out;
+			t008: port detected_motion_event_in -> thr_sound_alarm.alarm_triggered_in;
 			t009: port thr_system_armed.sound_alarm_event_out -> thr_sound_alarm.alarm_triggered_in;
 
 			--SoundAlarmThr
 			t010: port thr_sound_alarm.display_warning_message -> display_data_out;
 			t011: port thr_sound_alarm.alarm_triggered_out -> sound_alarm_event_out;
-
-			--SoundSmokeAlarmThr
-			t012: port thr_sound_smoke_alarm.display_warning_message -> display_data_out;
-			t013: port detected_smoke_event_in -> thr_sound_smoke_alarm.detected_smoke_event_in;
-			t014: port thr_sound_smoke_alarm.sound_smoke_alarm_event_out -> sound_smoke_alarm_event_out;
+			t013: port detected_smoke_event_in -> thr_sound_alarm.alarm_triggered_in;
+			t017: port thr_sound_alarm.take_photo_event_out -> take_photo_event_out;			
+			t019: port success_in -> thr_sound_alarm.alarm_triggered_in;
 
 			--SavePhotoThr
 			t015: port photo_data_in -> thr_save_photo.photo_data_in;
-			t016: port thr_save_photo.write_photo_out -> write_data_out;
+			t016: port thr_save_photo.write_photo_out -> write_read_data_out;			
+			
+		flows
+			--f0: flow path pin_data_in -> t001;
+			f0: flow path pin_data_in -> t001 -> thr_login.f0 -> t018 -> write_read_data_out;
+			f1: flow path read_write_data_in -> t003 -> thr_login.f1 -> t004 ->  thr_system_armed.f0 -> t006 -> display_data_out;
+			f2: flow path read_write_data_in -> t003 -> thr_login.f1 -> t004 ->  thr_system_armed.f1 -> t009 -> thr_sound_alarm.f0 -> t010 -> display_data_out;
+			f3: flow path success_in -> t019 ->thr_sound_alarm.f1 -> t017 -> take_photo_event_out;
+			f4: flow path success_in -> t019 ->thr_sound_alarm.f2 -> t011 -> sound_alarm_event_out;
+			f5: flow path success_in -> t019 -> thr_sound_alarm.f3 -> t007 -> send_message_event_out;
+			f6: flow path photo_data_in -> t015 -> thr_save_photo.f0 -> t016 ->write_read_data_out;
+
+
 
 	end MasterControlUnit.i;
-
-	-----------------------------
-	--  Input Implementations  --
-	-----------------------------
-	process implementation MotionInterface.i
-		subcomponents
-			thr_motion: thread MotionThr.i;
-
-		connections
-			t01: port detected_motion_event_in -> thr_motion.detected_motion_event_in;
-			t02: port thr_motion.detected_motion_event_out -> detected_motion_event_out;
-	end MotionInterface.i;
-
-	process implementation SmokeInterface.i
-		subcomponents
-			thr_smoke: thread SmokeThr.i;
-		connections
-			t01: port detected_smoke_event_in -> thr_smoke.detected_smoke_event_in;
-			t02: port thr_smoke.detected_smoke_event_out -> detected_smoke_event_out;
-	end SmokeInterface.i;
-
-	process implementation CameraInterface.i
-		subcomponents
-			thr_camera: thread CameraThr.i;
-		connections
-			t01: port photo_data_in -> thr_camera.photo_data_in;
-			t02: port thr_camera.photo_data_out -> photo_data_out;
-			t03: port take_photo_event_in -> thr_camera.take_photo_event_in;
-			t04: port thr_camera.take_photo_event_out -> take_photo_event_out;
-	end CameraInterface.i;
-
-	-------------------------------
-	--  Outputs Implementations  --
-	-------------------------------
-	process implementation SMSInterface.i
-		subcomponents
-			thr_sms: thread SMSThr.i;
-		connections
-			t01: port send_message_event_in -> thr_sms.send_message_event_in;
-			t02: port thr_sms.send_message_event_out -> send_message_event_out;
-	end SMSInterface.i;
-
-	process implementation DataInterface.i
-		subcomponents
-			thr_data: thread DataThr.i;
-		connections
-			t01: port read_data_event_in -> thr_data.read_data_event_in;
-			t02: port thr_data.read_data_event_out -> read_data_event_out;
-			t03: port read_data_in -> thr_data.read_data_in;
-			t04: port thr_data.read_data_out -> read_data_out;
-			t05: port write_data_in -> thr_data.write_data_in;
-			t06: port thr_data.write_data_out -> write_data_out;
-	end DataInterface.i;
-
-	process implementation AlarmInterface.i
-		subcomponents
-			thr_alarm: thread AlarmThr.i;
-		connections
-			t01: port sound_alarm_event_in -> thr_alarm.sound_alarm_event_in;
-			t02: port thr_alarm.sound_alarm_event_out -> sound_alarm_event_out;
-			t03: port sound_smoke_alarm_event_in -> thr_alarm.sound_smoke_alarm_event_in;
-			t04: port thr_alarm.sound_smoke_alarm_event_out -> sound_smoke_alarm_event_out;
-	end AlarmInterface.i;
 
 	-------------------------------
 	--  MC Threads  Definitions  --
 	-------------------------------
-	thread LoginThr
-	end LoginThr;
-
-	thread LogOffThr
-	end LogOffThr;
-
 	thread PinEnteredThr
 		features
 			pin_input_data_in: in data port;
-			read_pin_event_out: out event port;
-			read_pin_data_in: in data port;
+			read_out: out data port;
+			data_in: in data port;
 			auth_results_data_out: out data port;
-			take_photo_event_out: out event port;
+		flows
+			f0: flow path pin_input_data_in -> read_out;
+			f1: flow path data_in -> auth_results_data_out;
 		properties
-			Dispatch_Protocol => Sporadic;
+			Dispatch_Protocol => Periodic;
 			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 1;
+			Period => 100 ms;
+			--Priority => 12;
+
 	end PinEnteredThr;
 
 	thread SystemArmedThr
 		features
-			display_alarm_status: out data port;
-			sendMessage_event_out: out event port;
+			display_alarm_on_off: out data port;
 			auth_results_data_in: in data port;
-			alarm_triggered_event_in: in event port;
 			sound_alarm_event_out: out event port;
+		flows
+			f0: flow path auth_results_data_in -> display_alarm_on_off;
+			f1: flow path auth_results_data_in -> sound_alarm_event_out;
 		properties
 			Dispatch_Protocol => Periodic;
 			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 1;
+			Period => 50 ms;
+			--Priority => 2;
+
 	end SystemArmedThr;
 
 	thread SoundAlarmThr
@@ -225,124 +124,38 @@ public
 			display_warning_message: out data port;
 			alarm_triggered_in: in event port;
 			alarm_triggered_out: out event port;
+			take_photo_event_out: out event port;
+			sendMessage_event_out: out event port;
+		flows
+			f0: flow path alarm_triggered_in -> display_warning_message;
+			f1: flow path alarm_triggered_in -> take_photo_event_out;
+			f2: flow path alarm_triggered_in -> alarm_triggered_out;
+			f3: flow path alarm_triggered_in -> sendMessage_event_out;
 		properties
 			Dispatch_Protocol => Periodic;
 			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 2;
-	end SoundAlarmThr;
+			Period => 50 ms;
+			--Priority => 1;
 
-	thread SoundSmokeAlarmThr
-		features
-			display_warning_message: out data port;
-			detected_smoke_event_in: in event port;
-			sound_smoke_alarm_event_out: out event port;
-		properties
-			Dispatch_Protocol => Periodic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 2;
-	end SoundSmokeAlarmThr;
+	end SoundAlarmThr;
 
 	thread SavePhotoThr
 		features
 			photo_data_in: in data port;
 			write_photo_out: out data port;
+		flows
+			f0: flow path photo_data_in -> write_photo_out;
 		properties
-			Dispatch_Protocol => Sporadic;
+			Dispatch_Protocol => Periodic;
 			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 3;
+			Period => 100 ms;
+			--Priority => 2;
+
 	end SavePhotoThr;
-	-------------------------------------------
-	--  Input Interface Threads Definitions  --
-	-------------------------------------------
-	thread MotionThr
-		features
-			detected_motion_event_in: in event port;
-			detected_motion_event_out: out event port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 4;
-	end MotionThr;
-
-	thread SmokeThr
-		features
-			detected_smoke_event_in: in event port;
-			detected_smoke_event_out: out event port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 4;
-	end SmokeThr;
-
-	thread CameraThr
-		features
-			photo_data_in: in data port;
-			photo_data_out: out data port;
-			take_photo_event_in: in event port;
-			take_photo_event_out: out event port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 5;
-	end CameraThr;
-
-	---------------------------------------------
-	--  Outputs Interface Threads Definitions  --
-	---------------------------------------------
-	thread SMSThr
-		features
-			send_message_event_in: in event port;
-			send_message_event_out: out event port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 6;
-	end SMSThr;
-
-	thread DataThr
-		features
-			read_data_event_in: in event port;
-			read_data_event_out: out event port;
-			read_data_in: in data port;
-			read_data_out: out data port;
-			write_data_in: in data port;
-			write_data_out: out data port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 7;
-	end DataThr;
-
-	thread AlarmThr
-		features
-			sound_alarm_event_in: in event port;
-			sound_alarm_event_out: out event port;
-			sound_smoke_alarm_event_in: in event port;
-			sound_smoke_alarm_event_out: out event port;
-		properties
-			Dispatch_Protocol => Sporadic;
-			Compute_Execution_Time => 3 ms .. 5 ms;
-			Period => 10 ms;
-			Priority => 8;
-	end AlarmThr;
 
 	-----------------------------------
 	--  MC Threads  Implementations  --
 	-----------------------------------
-	thread implementation LoginThr.i
-	end LoginThr.i;
-
-	thread implementation LogOffThr.i
-	end LogOffThr.i;
-
 	thread implementation PinEnteredThr.i
 	end PinEnteredThr.i;
 
@@ -352,31 +165,7 @@ public
 	thread implementation SoundAlarmThr.i
 	end SoundAlarmThr.i;
 
-	thread implementation SoundSmokeAlarmThr.i
-	end SoundSmokeAlarmThr.i;
-
 	thread implementation SavePhotoThr.i
 	end SavePhotoThr.i;
-
-	------------------------------------------
-	--  Interface Threads  Implementations  --
-	------------------------------------------
-	thread implementation MotionThr.i
-	end MotionThr.i;
-
-	thread implementation SmokeThr.i
-	end SmokeThr.i;
-
-	thread implementation CameraThr.i
-	end CameraThr.i;
-
-	thread implementation SMSThr.i
-	end SMSThr.i;
-
-	thread implementation DataThr.i
-	end DataThr.i;
-
-	thread implementation AlarmThr.i
-	end AlarmThr.i;
 
 end software;

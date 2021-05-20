@@ -1,0 +1,6 @@
+Bound Resource Budget Analysis Report
+
+ERROR:  thr_login: Thread instance mcu.thr_login has execution time, but no Reference_Processor. Please this property.
+ERROR:  thr_system_armed: Thread instance mcu.thr_system_armed has execution time, but no Reference_Processor. Please this property.
+ERROR:  thr_sound_alarm: Thread instance mcu.thr_sound_alarm has execution time, but no Reference_Processor. Please this property.
+ERROR:  thr_save_photo: Thread instance mcu.thr_save_photo has execution time, but no Reference_Processor. Please this property.

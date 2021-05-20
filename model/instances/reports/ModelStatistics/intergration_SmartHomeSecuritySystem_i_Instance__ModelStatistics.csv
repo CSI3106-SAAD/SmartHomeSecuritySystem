@@ -1,0 +1,6 @@
+Model statistics Report
+
+SmartHomeSecuritySystem_i_Instance: Model Statistics: 55 component type declarations, 33 component implementation declarations, 7 data type declarations.  
+SmartHomeSecuritySystem_i_Instance: Flow Statistics: 72 flow specifications, 26 end-to-end flows.  
+SmartHomeSecuritySystem_i_Instance: Application statistics: 4 threads, 1 processes, 27 semantic connections, 3 end-to-end flow instances.  
+SmartHomeSecuritySystem_i_Instance: Execution platform statistics: 1 processors, 0 virtual processors, 2 memory units, 1 buses, 0 virtual buses, 8 devices.  
